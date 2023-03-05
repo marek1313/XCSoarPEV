@@ -1,0 +1,12 @@
+Index: curl-7.85.0/lib/vtls/openssl.c
+===================================================================
+--- curl-7.85.0.orig/lib/vtls/openssl.c
++++ curl-7.85.0/lib/vtls/openssl.c
+@@ -2755,6 +2755,7 @@ static CURLcode ossl_connect_step1(struc
+   */
+ 
+   ctx_options = SSL_OP_ALL;
++  ctx_options |= SSL_OP_LEGACY_SERVER_CONNECT;
+ 
+ #ifdef SSL_OP_NO_TICKET
+   ctx_options |= SSL_OP_NO_TICKET;

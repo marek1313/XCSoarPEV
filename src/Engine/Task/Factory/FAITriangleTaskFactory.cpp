@@ -1,0 +1,55 @@
+/* Copyright_License {
+
+  XCSoar Glide Computer - http://www.xcsoar.org/
+  Copyright (C) 2000-2021 The XCSoar Project
+  A detailed list of copyright holders can be found in the file "AUTHORS".
+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+}
+ */
+
+#include "FAITriangleTaskFactory.hpp"
+#include "Constraints.hpp"
+#include "Task/Shapes/FAITriangleTask.hpp"
+
+
+static constexpr TaskFactoryConstraints fai_triangle_constraints = {
+  true, //task_scored
+  true,  //fai finish
+  false,  //homogenous tps
+  false, //is closed
+  false, //score start at pev
+  1000,  //maximum height loss (start - finish)
+  false, //arm start required
+  4, 4,  //min points, max points
+};
+
+
+FAITriangleTaskFactory::FAITriangleTaskFactory(OrderedTask& _task,
+                               const TaskBehaviour &tb):
+  FAITaskFactory(fai_triangle_constraints, _task, tb)
+{
+}
+
+TaskValidationErrorSet
+FAITriangleTaskFactory::Validate() const noexcept
+{
+  auto errors = FAITaskFactory::Validate();
+
+  if (!FAITriangleValidator::Validate(task))
+    errors |= TaskValidationErrorType::WRONG_SHAPE;
+
+  return errors;
+}

@@ -1,0 +1,193 @@
+/*
+Copyright_License {
+
+  XCSoar Glide Computer - http://www.xcsoar.org/
+  Copyright (C) 2000-2022 The XCSoar Project
+  A detailed list of copyright holders can be found in the file "AUTHORS".
+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+}
+
+*/
+
+#include "Gauge/GaugeFLARM.hpp"
+#include "ui/canvas/Canvas.hpp"
+#include "FlarmTrafficWindow.hpp"
+#include "Blackboard/LiveBlackboard.hpp"
+#include "Computer/Settings.hpp"
+#include "PageActions.hpp"
+
+#ifdef ENABLE_OPENGL
+#include "ui/canvas/opengl/Scope.hpp"
+#endif
+
+class SmallTrafficWindow : public FlarmTrafficWindow {
+  bool dragging, pressed;
+
+public:
+  SmallTrafficWindow(ContainerWindow &parent, const PixelRect &rc,
+                     const FlarmTrafficLook &look,
+                     const WindowStyle style=WindowStyle()) noexcept;
+
+  void Update(const NMEAInfo &gps_info,
+              const TeamCodeSettings &settings) noexcept;
+
+private:
+  void SetPressed(bool _pressed) noexcept {
+    if (_pressed == pressed)
+      return;
+
+    pressed = _pressed;
+    Invalidate();
+  }
+
+protected:
+  void OnCancelMode() noexcept override;
+  bool OnMouseDown(PixelPoint p) noexcept override;
+  bool OnMouseUp(PixelPoint p) noexcept override;
+  bool OnMouseMove(PixelPoint p, unsigned keys) noexcept override;
+  void OnPaint(Canvas &canvas) noexcept override;
+};
+
+SmallTrafficWindow::SmallTrafficWindow(ContainerWindow &parent,
+                                       const PixelRect &rc,
+                                       const FlarmTrafficLook &look,
+                                       const WindowStyle style) noexcept
+  :FlarmTrafficWindow(look, 1, 1, true),
+   dragging(false), pressed(false)
+{
+  Create(parent, rc, style);
+}
+
+void
+SmallTrafficWindow::Update(const NMEAInfo &gps_info,
+                           const TeamCodeSettings &settings) noexcept
+{
+  FlarmTrafficWindow::Update(gps_info.track, gps_info.flarm.traffic, settings);
+}
+
+void
+SmallTrafficWindow::OnCancelMode() noexcept
+{
+  if (dragging) {
+    dragging = false;
+    pressed = false;
+    Invalidate();
+    ReleaseCapture();
+  }
+
+  FlarmTrafficWindow::OnCancelMode();
+}
+
+bool
+SmallTrafficWindow::OnMouseDown([[maybe_unused]] PixelPoint p) noexcept
+{
+  if (!dragging) {
+    dragging = true;
+    SetCapture();
+
+    pressed = true;
+    Invalidate();
+  }
+
+  return true;
+}
+
+bool
+SmallTrafficWindow::OnMouseUp([[maybe_unused]] PixelPoint p) noexcept
+{
+  if (dragging) {
+    const bool was_pressed = pressed;
+
+    dragging = false;
+    pressed = false;
+    Invalidate();
+
+    ReleaseCapture();
+
+    if (was_pressed)
+      PageActions::ShowTrafficRadar();
+
+    return true;
+  }
+
+  return false;
+}
+
+bool
+SmallTrafficWindow::OnMouseMove(PixelPoint p,
+                                [[maybe_unused]] unsigned keys) noexcept
+{
+  if (dragging) {
+    SetPressed(IsInside(p));
+    return true;
+  }
+
+  return false;
+}
+
+void
+SmallTrafficWindow::OnPaint(Canvas &canvas) noexcept
+{
+  FlarmTrafficWindow::OnPaint(canvas);
+
+  if (pressed) {
+#ifdef ENABLE_OPENGL
+    const ScopeAlphaBlend alpha_blend;
+    canvas.Clear(COLOR_YELLOW.WithAlpha(80));
+#else
+    canvas.InvertRectangle(GetClientRect());
+#endif
+  }
+}
+
+void
+GaugeFLARM::Prepare(ContainerWindow &parent, const PixelRect &rc) noexcept
+{
+  WindowStyle style;
+  style.Hide();
+
+  SetWindow(std::make_unique<SmallTrafficWindow>(parent, rc, look, style));
+}
+
+void
+GaugeFLARM::Show(const PixelRect &rc) noexcept
+{
+  Update(blackboard.Basic());
+
+  OverlappedWidget::Show(rc);
+
+  blackboard.AddListener(*this);
+}
+
+void
+GaugeFLARM::Hide() noexcept
+{
+  blackboard.RemoveListener(*this);
+  OverlappedWidget::Hide();
+}
+
+void
+GaugeFLARM::OnGPSUpdate(const MoreData &basic)
+{
+  Update(basic);
+}
+
+void
+GaugeFLARM::Update(const NMEAInfo &basic) noexcept
+{
+  SmallTrafficWindow &window = (SmallTrafficWindow &)GetWindow();
+  window.Update(basic, blackboard.GetComputerSettings().team_code);
+}
