@@ -138,9 +138,11 @@ TaskPropertiesPanel::ReadValues()
   if (SaveValue(START_REQUIRES_ARM, p.start_constraints.require_arm))
     changed = true;
 
+  changed |= SaveValue(START_AT_PEV, p.start_constraints.score_pev);
+
   changed |= SaveValue(START_SCORE_EXIT, p.start_constraints.score_exit);
 
-  changed |= SaveValue(START_AT_PEV, p.start_constraints.score_pev);
+
 
   RoughTime new_open = p.start_constraints.open_time_span.GetStart();
   RoughTime new_close = p.start_constraints.open_time_span.GetEnd();
@@ -259,6 +261,7 @@ TaskPropertiesPanel::Prepare([[maybe_unused]] ContainerWindow &parent,
              _("Configure whether the start must be armed manually or automatically."),
              false);
 
+  AddBoolean ("Start at PEV", nullptr, false);
   AddBoolean(_("Score start exit"), nullptr, false);
 
   const RoughTimeDelta time_zone =
