@@ -12,7 +12,7 @@ on:
       - '.github/workflows/build-container.yml'
       - '.github/workflows/build-unix.yml'
     branches:
-      - master
+      - main
 
   pull_request:
     paths-ignore:
