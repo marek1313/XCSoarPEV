@@ -9,8 +9,8 @@ on:
       - 'ide/**'
       - 'kobo/**'
       - 'python/**'
-      - '.github/workflows/build-container.yml'
-      - '.github/workflows/build-unix.yml'
+      - '.github/workflows/**'
+      - 'Readme.md'
     branches:
       - main
 
@@ -22,8 +22,8 @@ on:
       - 'ide/**'
       - 'kobo/**'
       - 'python/**'
-      - '.github/workflows/build-container.yml'
-      - '.github/workflows/build-unix.yml'
+      - '.github/workflows/**'
+      - 'Readme.md'
     branches:
       - main
 
