@@ -10,6 +10,7 @@ on:
       - 'kobo/**'
       - 'python/**'
 <<<<<<< HEAD
+<<<<<<< HEAD
       - '.github/workflows/**'
       - 'README.md'
     branches:
@@ -17,6 +18,10 @@ on:
 =======
       - '.github/workflows/build-container.yml'
       - '.github/workflows/build-unix.yml'
+=======
+      - '.github/workflows/**'
+      - 'Readme.md'
+>>>>>>> Update android.yml
     branches:
       - master
 >>>>>>> Create android.yml
@@ -30,6 +35,7 @@ on:
       - 'kobo/**'
       - 'python/**'
 <<<<<<< HEAD
+<<<<<<< HEAD
       - '.github/workflows/**'
       - 'README.md'
     branches:
@@ -37,6 +43,10 @@ on:
 =======
       - '.github/workflows/build-container.yml'
       - '.github/workflows/build-unix.yml'
+=======
+      - '.github/workflows/**'
+      - 'Readme.md'
+>>>>>>> Update android.yml
     branches:
       - master
 >>>>>>> Create android.yml
