@@ -88,7 +88,7 @@ class NativeView extends SurfaceView
     wakelockhandler = _wakeLockHandler;
     fullScreenHandler = _fullScreenHandler;
     errorHandler = _errorHandler;
-
+     
     resources = context.getResources();
 
     hasKeyboard = resources.getConfiguration().keyboard !=
@@ -221,7 +221,8 @@ class NativeView extends SurfaceView
    */
   private Bitmap loadResourceBitmap(String name) {
     /* find the resource */
-    int resourceId = resources.getIdentifier(name, "drawable", "org.xcsoar");
+	String packageName = getContext().getPackageName();
+    int resourceId = resources.getIdentifier(name, "drawable", packageName);
     if (resourceId == 0) {
       resourceId = resources.getIdentifier(name, "drawable",
                                            "org.xcsoar.testing");
@@ -289,10 +290,10 @@ class NativeView extends SurfaceView
       String extension = filename.substring(filename.lastIndexOf(".") + 1);
       MimeTypeMap mime = MimeTypeMap.getSingleton();
       String mimeType = mime.getMimeTypeFromExtension(extension);
-
+      String packageName = getContext().getPackageName();
       /* this URI is going to be handled by FileProvider */
       Uri uri = new Uri.Builder().scheme("content")
-        .authority("org.xcsoar")
+        .authority(packageName)
         .encodedPath("/waypoints/" + id + "/" + Uri.encode(filename))
         .build();
 

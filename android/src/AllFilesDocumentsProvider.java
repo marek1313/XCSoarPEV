@@ -54,7 +54,7 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 public class AllFilesDocumentsProvider extends DocumentsProvider {
-    private final static String AUTHORITY = "org.xcsoar.allfiles";
+    private final static String AUTHORITY = "org.xcsoarpev.allfiles";
 
     private static final String[] DEFAULT_ROOT_PROJECTION = {
             Root.COLUMN_ROOT_ID,
