@@ -10,7 +10,7 @@ on:
       - 'kobo/**'
       - 'python/**'
       - '.github/workflows/**'
-      - 'Readme.md'
+      - 'README.md'
     branches:
       - main
 
@@ -23,7 +23,7 @@ on:
       - 'kobo/**'
       - 'python/**'
       - '.github/workflows/**'
-      - 'Readme.md'
+      - 'README.md'
     branches:
       - main
 
