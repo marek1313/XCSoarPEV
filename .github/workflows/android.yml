@@ -25,7 +25,7 @@ on:
       - '.github/workflows/build-container.yml'
       - '.github/workflows/build-unix.yml'
     branches:
-      - master
+      - main
 
 env:
   DEBUG: y
@@ -96,7 +96,7 @@ jobs:
       - name: Deploy to Staging server
         if: |
           github.repository == 'XCSoar/XCSoar' &&
-          github.ref == 'ref/head/master' &&
+          github.ref == 'ref/head/main' &&
           github.event == 'push'
         uses: easingthemes/ssh-deploy@main
         env:
