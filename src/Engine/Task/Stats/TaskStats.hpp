@@ -25,7 +25,7 @@
 #include "ElementStat.hpp"
 #include "StartStats.hpp"
 #include "WindowStats.hpp"
-
+#include "Navigation/Aircraft.hpp"
 #include <type_traits>
 
 struct TaskBehaviour;
@@ -99,9 +99,18 @@ public:
   /** Whether the task is appoximately in final glide */
   bool flight_mode_final_glide;
 
+  /**
+   * PEV was sent to start task
+   *
+   */
+  bool pev_based_advance_ready;
+
+  TimeStamp pev_time;
+
   StartStats start;
 
   WindowStats last_hour;
+
 
   FloatDuration GetEstimatedTotalTime() const noexcept {
     return total.time_elapsed + total.time_remaining_start;

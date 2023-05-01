@@ -28,8 +28,8 @@ void
 StartConstraints::SetDefaults()
 {
   open_time_span = RoughTimeSpan::Invalid();
-  closed_substart_time_span = BrokenTime::Invalid();
-  pev_start_initiated=false;
+
+
   max_speed = 0;
   max_height = 0;
   max_height_ref = AltitudeReference::AGL;

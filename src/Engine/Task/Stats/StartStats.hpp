@@ -23,7 +23,7 @@
 #pragma once
 
 #include "time/Stamp.hpp"
-
+#include "Navigation/Aircraft.hpp"
 #include <type_traits>
 
 struct AircraftState;
@@ -33,7 +33,7 @@ struct AircraftState;
  */
 struct StartStats {
   bool task_started;
-
+  bool advanced_by_pev;
   /**
    * The time when the task was started [UTC seconds of day].  Only
    * valid if #task_started is true.
@@ -54,13 +54,20 @@ struct StartStats {
 
   void Reset() {
     task_started = false;
+    advanced_by_pev = false;
+
   }
 
   /**
    * Enable the #task_started flag and copy data from the
    * #AircraftState.
    */
-  void SetStarted(const AircraftState &aircraft);
+  void SetStarted(const AircraftState &aircraft,bool pev);
+
+  void SetStarted(const AircraftState &aircraft) {
+	  SetStarted(aircraft,false);
+  }
+
 };
 
 static_assert(std::is_trivial<StartStats>::value, "type is not trivial");

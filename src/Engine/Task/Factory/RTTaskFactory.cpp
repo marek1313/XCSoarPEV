@@ -30,7 +30,7 @@ static constexpr TaskFactoryConstraints rt_constraints = {
   false,  //homogenous tps
   false, //is closed
   false, //score start at pev
-  0,  //maximum height loss (start - finish)
+  0,  //maximum height loss (start - finish altitude limit)
   false, //arm start required
   2, 30,  //min points, max points
 };

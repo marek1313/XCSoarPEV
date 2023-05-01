@@ -28,7 +28,7 @@ FinishConstraints::SetDefaults()
 {
   min_height = 0;
   max_height_loss = 0;
-  height_at_start=0;
+
   min_height_ref = AltitudeReference::AGL;
   fai_finish = false;
 }
@@ -37,10 +37,6 @@ bool
 FinishConstraints::CheckHeight(const AircraftState &state,
                                const double finish_elevation) const
 {
-  if (max_height_loss>0){
-    if (height_at_start-max_height_loss<state.altitude)
-      return false;
-  }
   if (min_height == 0)
     return true;
 
@@ -49,7 +45,4 @@ FinishConstraints::CheckHeight(const AircraftState &state,
   else
     return state.altitude >= min_height + finish_elevation;
 }
-void FinishConstraints::UpdateAtTaskStart(const AircraftState &state_at_start){
-  height_at_start=state_at_start.altitude;
 
-}

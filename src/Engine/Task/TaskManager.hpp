@@ -167,9 +167,13 @@ public:
    * @param wp Waypoint to go to
    * @return True if successful
    */
-  void SetPEV(BrokenTime bt);
-  bool DoGoto(WaypointPtr &&wp);
 
+  bool DoGoto(WaypointPtr &&wp);
+  /**
+   * Sets Pilot Event
+   *
+   */
+  bool SetPEV(const BrokenTime bt);
   /**
    * Updates internal state of task given new aircraft.
    * Only essential calculations are performed here;

@@ -34,12 +34,9 @@ struct StartConstraints {
    * The time span during which the start gate is open.
    */
   RoughTimeSpan open_time_span;
-  /**
-   * After start with PEV, next start is not possible within start_window time
-   */
 
-  BrokenTime closed_substart_time_span;
-  bool pev_start_initiated;
+
+
   /** Maximum ground speed (m/s) allowed in start sector */
   double max_speed;
 
@@ -63,7 +60,7 @@ struct StartConstraints {
   bool score_exit;
 
   /**
-     * If this is true, then PEV point is goal.
+     * If this is true, then PEV point is goal and start is on state at PEV.
      */
   bool score_pev;
 

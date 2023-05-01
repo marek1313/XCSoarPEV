@@ -22,8 +22,11 @@ Copyright_License {
 */
 
 #pragma once
-
+#ifdef ANDROID
 #include "Device/util/LineHandler.hpp"
+#else
+#include "Device/Util/LineHandler.hpp"
+#endif
 
 class MultipleDevices;
 

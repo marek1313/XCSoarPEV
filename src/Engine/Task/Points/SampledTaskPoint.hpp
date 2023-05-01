@@ -70,7 +70,7 @@ public:
    *
    * @return Partially initialised object
    */
-  SampledTaskPoint(const GeoPoint &location, const bool is_scored);
+  SampledTaskPoint(const GeoPoint &location, const bool b_scored);
 
   /** Reset the task (as if never flown) */
   void Reset();
@@ -86,7 +86,7 @@ public:
    * @return Location of max distance node
    */
   [[gnu::pure]]
-  const GeoPoint &GetLocationMax() const {
+  virtual const GeoPoint &GetLocationMax() const {
     assert(search_max.IsValid());
 
     return search_max.GetLocation();
@@ -98,7 +98,7 @@ public:
    *
    * @return Location of minimum distance node
    */
-  const GeoPoint &GetLocationMin() const {
+  virtual const GeoPoint &GetLocationMin() const {
     assert(search_min.IsValid());
 
     return search_min.GetLocation();
@@ -124,6 +124,8 @@ protected:
    */
   bool AddInsideSample(const AircraftState &state,
                        const FlatProjection &projection);
+
+
 
 public:
   /**
@@ -167,6 +169,7 @@ public:
   bool IsBoundaryScored() const {
     return boundary_scored;
   }
+
 
 protected:
   void SetPast(bool _past) {

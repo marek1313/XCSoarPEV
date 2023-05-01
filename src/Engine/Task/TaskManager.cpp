@@ -27,6 +27,8 @@
 #include "Unordered/GotoTask.hpp"
 #include "Unordered/AlternateTask.hpp"
 
+#include "LogFile.hpp"
+
 TaskManager::TaskManager(const TaskBehaviour &_task_behaviour,
                          const Waypoints &wps)
   :glide_polar(GlidePolar::Invalid()), safety_polar(GlidePolar::Invalid()),
@@ -337,32 +339,13 @@ TaskManager::GetStats() const
 
   return null_stats;
 }
-void
-TaskManager::SetPEV(BrokenTime bt){
+bool
+TaskManager::SetPEV(const BrokenTime bt){
 
-    RoughTime new_start = RoughTime(bt.hour, bt.minute);
-    RoughTime new_end = RoughTime::Invalid();
-    const OrderedTaskSettings &ots =
-        GetOrderedTask().GetOrderedTaskSettings();
-    const StartConstraints &start = ots.start_constraints;
+	return ordered_task->SetPEV(bt);
 
-    if (start.pev_start_wait_time.count() > 0) {
-      auto t = std::chrono::duration_cast<std::chrono::minutes>(start.pev_start_wait_time);
-      // Set start time to the next full minute after wait time.
-      // This way we make sure wait time is passed before xcsoar opens the start.
-      if (bt.second > 0)
-        t += std::chrono::minutes{1};
-      new_start = new_start + RoughTimeDelta::FromDuration(t);
-    }
-
-    if (start.pev_start_window.count() > 0) {
-      new_end = new_start + RoughTimeDelta::FromDuration(start.pev_start_window);
-    }
-    const RoughTimeSpan ts = RoughTimeSpan(new_start, new_end);
-    OrderedTaskSettings otb = GetOrderedTask().GetOrderedTaskSettings();
-    otb.start_constraints.open_time_span=ts;
-    SetOrderedTaskSettings(otb);
 }
+
 
 bool
 TaskManager::DoGoto(WaypointPtr &&wp)

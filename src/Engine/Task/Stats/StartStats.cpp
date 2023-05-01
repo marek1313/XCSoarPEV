@@ -24,10 +24,12 @@
 #include "Navigation/Aircraft.hpp"
 
 void
-StartStats::SetStarted(const AircraftState &aircraft)
+StartStats::SetStarted(const AircraftState &aircraft,bool pev)
 {
   task_started = true;
+  advanced_by_pev = pev;
   time = aircraft.time;
   altitude = aircraft.altitude;
   ground_speed = aircraft.ground_speed;
+
 }

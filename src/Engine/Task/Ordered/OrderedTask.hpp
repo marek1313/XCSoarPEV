@@ -94,6 +94,9 @@ private:
 
   StaticString<64> name;
 
+
+
+
 public:
   /**
    * Constructor.
@@ -503,6 +506,7 @@ private:
                             const FlatBoundingBox &bb_last,
                             bool &transition_enter, bool &transition_exit,
                             bool &last_started,
+                            bool pev_based_advance_ready,
                             const bool is_start);
 
   bool CheckTransitionOptionalStart(const AircraftState &state_now,
@@ -511,7 +515,8 @@ private:
                                     const FlatBoundingBox& bb_last,
                                     bool &transition_enter,
                                     bool &transition_exit,
-                                    bool &last_started);
+                                    bool &last_started,
+                                    bool pev_based_advance_ready);
 
   /**
    * @param waypoints Active waypoint database
@@ -691,12 +696,13 @@ public:
   bool IsValidTaskPoint(const int index_offset=0) const noexcept override;
   bool UpdateIdle(const AircraftState& state_now,
                   const GlidePolar &glide_polar) noexcept override;
-  void SetPEV(BrokenTime bt);
+
   /* virtual methods from class AbstractTask */
   void Reset() noexcept override;
 
   bool TaskStarted(bool soft=false) const noexcept override;
   TaskValidationErrorSet CheckTask() const noexcept override;
+
 
 protected:
   /* virtual methods from class AbstractTask */
@@ -740,9 +746,15 @@ protected:
                             DistanceStat &leg_remaining_effective,
                             const GlideResult &solution_remaining_total,
                             const GlideResult &solution_remaining_leg) noexcept override;
+
+  // PEV
+  void UpdateAfterPEV(const AircraftState &state,const BrokenTime bt) noexcept override;
+
+
 protected:
   bool IsScored() const noexcept override;
 
 public:
   void AcceptTaskPointVisitor(TaskPointConstVisitor &visitor) const override;
+  bool SetPEV(const BrokenTime bt) override;
 };

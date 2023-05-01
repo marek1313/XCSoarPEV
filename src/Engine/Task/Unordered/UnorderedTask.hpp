@@ -72,4 +72,7 @@ public:
                             const GlideResult &solution_remaining_total,
                             const GlideResult &solution_remaining_leg) noexcept override;
   bool IsScored() const noexcept override { return false; }
+  void UpdateAfterPEV(const AircraftState &state __attribute__((unused)),const BrokenTime bt __attribute__((unused))) noexcept override{
+
+  };
 };

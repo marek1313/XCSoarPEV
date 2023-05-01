@@ -66,7 +66,7 @@ public:
              const StartConstraints &constraints);
 
   bool DoesRequireArm() const {
-    return constraints.require_arm;
+    return constraints.require_arm&&(!constraints.score_pev);
   }
 
   bool GetScoreExit() const noexcept {
@@ -77,6 +77,7 @@ public:
     return constraints.score_pev;
   }
 
+
   /**
    * Search for the min point on the boundary from
    * the aircraft state to the next point.  Should only
@@ -85,6 +86,25 @@ public:
    * @param state Current aircraft state
    * @param next Next task point following the start
    */
+  double ScoreAdjustment() const override {
+	return constraints.score_pev ?
+		0 : OrderedTaskPoint::ScoreAdjustment();
+  }
+
+  [[gnu::pure]]
+    const GeoPoint &GetLocationMax() const override {
+      if (GetActiveState()==OrderedTaskPoint::BEFORE_ACTIVE && GetScorePEV())
+    	  return GetEnteredState().location.IsValid() ? GetEnteredState().location : OrderedTaskPoint::GetLocationMax();
+      return OrderedTaskPoint::GetLocationMax();
+    };
+
+
+    const GeoPoint &GetLocationMin() const override {
+    	if (GetActiveState()==OrderedTaskPoint::BEFORE_ACTIVE && GetScorePEV())
+    	    	  return GetEnteredState().location.IsValid() ? GetEnteredState().location : OrderedTaskPoint::GetLocationMin();
+    	      return OrderedTaskPoint::GetLocationMin();
+    };
+
   void find_best_start(const AircraftState &state,
                        const OrderedTaskPoint &next,
                        const FlatProjection &projection);
@@ -93,8 +113,11 @@ public:
   double GetElevation() const noexcept override;
 
   /* virtual methods from class ScoredTaskPoint */
-  bool CheckExitTransition(const AircraftState &ref_now,
+  bool CheckEnterTransition(const AircraftState &ref_now,
                            const AircraftState &ref_last) const noexcept override;
+
+  bool CheckExitTransition(const AircraftState &ref_now,
+                           const AircraftState &ref_last,const bool pev_advance_ready) const noexcept override;
 
   /* virtual methods from class OrderedTaskPoint */
   void SetTaskBehaviour(const TaskBehaviour &tb) noexcept override;
@@ -102,6 +125,8 @@ public:
   void SetNeighbours(OrderedTaskPoint *prev,
                      OrderedTaskPoint *next) noexcept override;
   bool IsInSector(const AircraftState &ref) const noexcept override;
+
+
 
 private:
   /* virtual methods from class ScoredTaskPoint */

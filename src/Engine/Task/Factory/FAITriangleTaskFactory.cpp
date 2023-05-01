@@ -31,7 +31,7 @@ static constexpr TaskFactoryConstraints fai_triangle_constraints = {
   false,  //homogenous tps
   false, //is closed
   false, //score start at pev
-  1000,  //maximum height loss (start - finish)
+  0,  //maximum height loss (start - finish)
   false, //arm start required
   4, 4,  //min points, max points
 };

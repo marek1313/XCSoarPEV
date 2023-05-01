@@ -22,9 +22,11 @@ Copyright_License {
 */
 
 #include "Angle.hpp"
-
+#include "LogFile.hpp"
 #include <cassert>
-
+#include <sstream>
+#include <string>
+#include <boost/stacktrace.hpp>
 Angle::DMS
 Angle::ToDMS() const noexcept
 {
@@ -102,9 +104,18 @@ Angle::AsBearing() const noexcept
 Angle
 Angle::AsDelta() const noexcept
 {
+
   assert(!isnan(value));
   assert(!isinf(value));
-  assert(fabs(value) < 100 * FullCircle().Native());
+  Angle retval(value);
+  //instead of exception, when input is trash, return trash but properly calculated ;)
+  if(!(fabs(value) < 100 * FullCircle().Native())){
+	  LogFormat("Probably incorrect angle %f",value);
+	  double intP,fracP;
+	  fracP=modf(retval/FullCircle(),&intP);
+	  retval=FullCircle()*fracP;
+
+  }
 
 #ifndef FIXED_MATH
   /* same workaround as in AsBearing() */
@@ -112,7 +123,7 @@ Angle::AsDelta() const noexcept
     return Zero();
 #endif
 
-  Angle retval(value);
+
 
   while (retval <= -HalfCircle())
     retval += FullCircle();

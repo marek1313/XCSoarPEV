@@ -59,7 +59,10 @@ protected:
    * edited.
    */
   bool force_full_update = true;
+  bool pev_received = false;
 
+  BrokenTime pev_receive_time;
+  TimeStamp last_state_time;
 private:
   /** low pass filter on best MC calculations */
   Filter mc_lpf{8};
@@ -142,6 +145,11 @@ public:
   bool UpdateAutoMC(GlidePolar &glide_polar, const AircraftState &state_now,
                     double fallback_mc) noexcept;
 
+  /**
+   * Set PEV
+   */
+
+  virtual bool SetPEV(const BrokenTime bt);
   /**
    * Check if task is valid.
    */
@@ -385,6 +393,9 @@ protected:
   /** Determines whether this task is scored */
   [[gnu::pure]]
   virtual bool IsScored() const noexcept = 0;
+
+  /** Update based on PEV **/
+  virtual void UpdateAfterPEV(const AircraftState &state,const BrokenTime pev_time) noexcept = 0;
 
 protected:
   /**

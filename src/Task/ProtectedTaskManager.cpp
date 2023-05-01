@@ -29,6 +29,8 @@ Copyright_License {
 #include "Engine/Task/Points/TaskWaypoint.hpp"
 #include "Engine/Route/ReachResult.hpp"
 
+#include "LogFile.hpp"
+
 ProtectedTaskManager::ProtectedTaskManager(TaskManager &_task_manager,
                                            const TaskBehaviour &tb)
   :Guard<TaskManager>(_task_manager),
@@ -56,11 +58,11 @@ ProtectedTaskManager::SetStartTimeSpan(const RoughTimeSpan &open_time_span)
   otb.start_constraints.open_time_span = open_time_span;
   lease->SetOrderedTaskSettings(otb);
 }
-void
-ProtectedTaskManager::SetPEV(BrokenTime bt){
+bool
+ProtectedTaskManager::SetPEV(const BrokenTime bt){
   ExclusiveLease lease(*this);
 
-  lease->SetPEV(bt);
+  return lease->SetPEV(bt);
 
 }
 const OrderedTaskSettings

@@ -31,6 +31,7 @@ Copyright_License {
 #include "Units/Units.hpp"
 #include "Language/Language.hpp"
 #include "Interface.hpp"
+#include "LogFile.hpp"
 
 using namespace std::chrono;
 
@@ -71,12 +72,13 @@ TaskPropertiesPanel::RefreshView()
     ftype == TaskFactoryType::MAT;
   bool fai_start_finish = p.finish_constraints.fai_finish;
   bool score_pev = p.start_constraints.score_pev;
+
   SetRowVisible(MIN_TIME, aat_types);
   LoadValueDuration(MIN_TIME, p.aat_min_time);
 
   LoadValue(START_REQUIRES_ARM, p.start_constraints.require_arm);
-
-  LoadValue(START_AT_PEV, p.start_constraints.score_pev);
+  SetRowVisible(START_AT_PEV, !fai_start_finish);
+  LoadValue(START_AT_PEV, score_pev&&(!fai_start_finish));
 
   SetRowVisible(START_SCORE_EXIT, !score_pev);
   LoadValue(START_SCORE_EXIT, p.start_constraints.score_exit);
@@ -102,16 +104,19 @@ TaskPropertiesPanel::RefreshView()
   SetRowVisible(FINISH_HEIGHT_REF, !fai_start_finish);
   LoadValueEnum(FINISH_HEIGHT_REF, p.finish_constraints.min_height_ref);
 
-  LoadValue(MAX_HEIGHT_LOSS, double(p.finish_constraints.max_height_loss),
-                UnitGroup::ALTITUDE);
+
 
 
   SetRowVisible(FAI_FINISH_HEIGHT, IsFai(ftype));
   LoadValue(FAI_FINISH_HEIGHT, fai_start_finish);
 
+  SetRowVisible(MAX_HEIGHT_LOSS, !fai_start_finish);
+  LoadValue(MAX_HEIGHT_LOSS, double(p.finish_constraints.max_height_loss),
+                  UnitGroup::ALTITUDE);
+
   LoadValueEnum(TASK_TYPE, ftype);
 
-  SetRowVisible(PEV_START_WAIT_TIME, (!fai_start_finish)&&(!score_pev));
+  SetRowVisible(PEV_START_WAIT_TIME, (!fai_start_finish));
   LoadValueDuration(PEV_START_WAIT_TIME,
                     p.start_constraints.pev_start_wait_time);
   SetRowVisible(PEV_START_WINDOW, !fai_start_finish);
@@ -208,6 +213,7 @@ TaskPropertiesPanel::OnFAIFinishHeightChange(DataFieldBoolean &df)
   if (newvalue != p.finish_constraints.fai_finish) {
     p.finish_constraints.fai_finish = p.start_constraints.fai_finish
       = newvalue;
+    p.finish_constraints.max_height_loss = newvalue ? 0 : p.finish_constraints.max_height_loss;
     ordered_task->SetOrderedTaskSettings(p);
 
     *task_changed = true;
@@ -227,14 +233,34 @@ TaskPropertiesPanel::OnTaskTypeChange(DataFieldEnum &df)
     RefreshView();
   }
 }
+void
+TaskPropertiesPanel::OnScoreAtPEVChange(DataFieldBoolean &df){
+
+	bool newvalue = df.GetValue();
+
+	OrderedTaskSettings p = ordered_task->GetOrderedTaskSettings();
+	p.start_constraints.score_pev = newvalue;
+	if (newvalue&&(!p.start_constraints.score_exit))  {
+
+		p.start_constraints.score_exit = true;}
+	ordered_task->SetOrderedTaskSettings(p);
+	*task_changed=true;
+	RefreshView();
+}
 
 void
 TaskPropertiesPanel::OnModified(DataField &df) noexcept
 {
+
   if (IsDataField(FAI_FINISH_HEIGHT, df))
     OnFAIFinishHeightChange((DataFieldBoolean &)df);
   else if (IsDataField(TASK_TYPE, df))
     OnTaskTypeChange((DataFieldEnum &)df);
+  else if (IsDataField(START_AT_PEV, df)){
+
+	  OnScoreAtPEVChange((DataFieldBoolean &)df);
+  }
+
 }
 
 void
@@ -261,7 +287,7 @@ TaskPropertiesPanel::Prepare([[maybe_unused]] ContainerWindow &parent,
              _("Configure whether the start must be armed manually or automatically."),
              false);
 
-  AddBoolean ("Start at PEV", nullptr, false);
+  AddBoolean (("Start at PEV"), nullptr, false,this);
   AddBoolean(_("Score start exit"), nullptr, false);
 
   const RoughTimeDelta time_zone =
@@ -303,7 +329,7 @@ TaskPropertiesPanel::Prepare([[maybe_unused]] ContainerWindow &parent,
           altitude_reference_list);
 
   AddFloat( ("Max height loss"),
-           ("Maximum altitude difference between task start and finish"),
+           ("Maximum altitude difference between task start and finish. If zero than ingored."),
            _T("%.0f %s"), _T("%.0f"),
            0, 10000, 25, false, 0);
 

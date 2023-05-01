@@ -71,7 +71,7 @@ public:
    * @param height FAI finish height (m)
    */
   void SetFaiFinishHeight(double height);
-
+  double CalculateFinishHeightFromStart(const double altitude);
   /* virtual methods from class TaskPoint */
   double GetElevation() const noexcept override;
 

@@ -263,18 +263,26 @@ Deserialise(OrderedTaskSettings &data, const ConstDataNode &node)
                     data.start_constraints.require_arm);
   node.GetAttribute(_T("start_score_exit"),
                     data.start_constraints.score_exit);
+
+  node.GetAttribute(_T("start_score_pev"),
+		  	  	  	 data.start_constraints.score_pev);
   node.GetAttribute(_T("start_max_speed"), data.start_constraints.max_speed);
   node.GetAttribute(_T("start_max_height"), data.start_constraints.max_height);
   GetHeightRef(node, _T("start_max_height_ref"),
                data.start_constraints.max_height_ref);
+  /*time should be entered manually after xcsoar start, no serializing
   data.start_constraints.open_time_span =
     node.GetAttributeRoughTimeSpan(_T("start_open_time"),
-                                   _T("start_close_time"));
+                              	  _T("start_close_time"));
+  */
   node.GetAttribute(_T("finish_min_height"),
                     data.finish_constraints.min_height);
 
   GetHeightRef(node, _T("finish_min_height_ref"),
                data.finish_constraints.min_height_ref);
+
+  node.GetAttribute(_T("max_height_loss"),data.finish_constraints.max_height_loss);
+
   node.GetAttribute(_T("fai_finish"), data.finish_constraints.fai_finish);
   data.start_constraints.fai_finish = data.finish_constraints.fai_finish;
   node.GetAttribute(_T("pev_start_wait_time"),

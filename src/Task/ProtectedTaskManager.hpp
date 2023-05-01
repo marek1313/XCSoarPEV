@@ -73,7 +73,7 @@ public:
 
   void SetStartTimeSpan(const RoughTimeSpan &open_time_span);
 
-  void SetPEV(BrokenTime bt);
+  bool SetPEV(const BrokenTime bt);
 
   [[gnu::pure]]
   WaypointPtr GetActiveWaypoint() const;

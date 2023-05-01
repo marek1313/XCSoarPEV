@@ -54,7 +54,7 @@ struct TaskFactoryConstraints {
   bool is_closed;
 
   /**
-   * Whether start is at PEV inside start point observaton zone
+   * Whether start is at PEV inside start point observation zone
    */
   bool score_start_at_pev;
 

@@ -93,6 +93,8 @@ doc/html/advanced/input/ALL		http://xcsoar.sourceforge.net/advanced/input/
 #include <tchar.h>
 #include <algorithm>
 
+#include "LogFile.hpp"
+
 #ifdef __APPLE__
 #include <TargetConditionals.h>
 #endif
@@ -207,12 +209,21 @@ InputEvents::eventPilotEvent([[maybe_unused]] const TCHAR *misc)
 try {
 
   const BrokenTime bt = BrokenDateTime::NowUTC();
-  //Start directly at PEV if in start poin OZ
-  protected_task_manager->SetPEV(bt);
+
 
 
   // Log pilot event
-  logger->LogPilotEvent(CommonInterface::Basic());
+
+
+  //Inform task manager about PEV
+    if (!protected_task_manager->SetPEV(bt)){
+    	//message that no pev should be set;
+    	TCHAR TempAll[120];
+    	    _stprintf(TempAll, _T("Probably start window not open yet"));
+    	Message::AddMessage(_("PEV Should not be used."), TempAll);
+    }else{
+    	 logger->LogPilotEvent(CommonInterface::Basic());
+    }
 
   // Let devices know the pilot event was pressed
   MessageOperationEnvironment env;

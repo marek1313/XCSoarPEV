@@ -41,7 +41,6 @@ enum class TaskFactoryType: uint8_t {
    */
   MAT,
 
-
   MIXED,
   TOURING,
 

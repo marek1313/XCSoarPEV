@@ -59,8 +59,11 @@ FinishPoint::EntryPrecondition() const
 double
 FinishPoint::GetElevation() const noexcept
 {
-  const auto nominal_elevation = GetBaseElevation() + safety_height;
+  auto nominal_elevation = GetBaseElevation() + safety_height;
 
+  if (constraints.max_height_loss>0){
+	  nominal_elevation =  std::max(nominal_elevation, fai_finish_height);
+  }
   if (constraints.fai_finish) {
     return std::max(nominal_elevation, fai_finish_height);
   } else {
@@ -91,6 +94,18 @@ void
 FinishPoint::SetFaiFinishHeight(const double height)
 {
   fai_finish_height = std::max(0., height);
+}
+
+double FinishPoint::CalculateFinishHeightFromStart(const double altitude){
+	double finish_height;
+	if (constraints.max_height_loss>0&&(!constraints.fai_finish))
+	      {
+	    	  finish_height = altitude - constraints.max_height_loss;
+	      }
+	      else{
+	    	  finish_height = altitude - 1000;
+	      }
+	return finish_height;
 }
 
 bool

@@ -24,7 +24,7 @@
 #include "Task/Points/TaskPoint.hpp"
 #include "Points/StartPoint.hpp"
 #include "util/Compiler.h"
-
+#include "LogFile.hpp"
 SmartTaskAdvance::SmartTaskAdvance()
   :state(TaskAdvance::MANUAL)
 {
@@ -46,6 +46,9 @@ SmartTaskAdvance::CheckReadyToAdvance(const TaskPoint &tp,
 
   case TaskPointType::START: {
     const StartPoint &sp = (const StartPoint &)tp;
+    if (sp.GetScorePEV()){
+    	return state_ready;
+    }
     if (sp.DoesRequireArm()) {
       if (armed) {
         state = TaskAdvance::START_ARMED;
@@ -68,6 +71,9 @@ SmartTaskAdvance::CheckReadyToAdvance(const TaskPoint &tp,
       state = TaskAdvance::TURN_DISARMED;
       if (state_ready)
         request_armed = true;
+    }
+    if (armed&& state_ready){
+    	LogFormat(_T("AAT Area ready to advance"));
     }
     return armed && state_ready;
 

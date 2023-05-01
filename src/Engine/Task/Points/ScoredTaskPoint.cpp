@@ -20,7 +20,7 @@
 }
  */
 #include "ScoredTaskPoint.hpp"
-
+#include "LogFile.hpp"
 ScoredTaskPoint::ScoredTaskPoint(const GeoPoint &location, bool b_scored)
   :SampledTaskPoint(location, b_scored)
 {
@@ -35,7 +35,7 @@ ScoredTaskPoint::TransitionEnter(const AircraftState &ref_now,
     return false;
 
   if (EntryPrecondition() && (!ScoreFirstEntry() || !HasEntered()))
-    state_entered = ref_now;
+	  	state_entered = ref_now;
 
   return true;
 }
@@ -43,16 +43,16 @@ ScoredTaskPoint::TransitionEnter(const AircraftState &ref_now,
 bool 
 ScoredTaskPoint::TransitionExit(const AircraftState &ref_now,
                                 const AircraftState &ref_last,
+                                const bool pev_advance_ready,
                                 const FlatProjection &projection)
 {
-  if (!CheckExitTransition(ref_now, ref_last))
+  if (!CheckExitTransition(ref_now, ref_last,pev_advance_ready))
     return false;
 
   if (ScoreLastExit()) {
     ClearSampleAllButLast(ref_last, projection);
     state_entered = ref_last;
   }
-
   has_exited = true;
 
   return true;
@@ -73,4 +73,5 @@ ScoredTaskPoint::Reset()
   SampledTaskPoint::Reset();
   state_entered.ResetTime();
   has_exited = false;
+
 }

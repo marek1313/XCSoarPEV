@@ -53,6 +53,7 @@ TaskStats::reset()
   inside_oz = false;
   need_to_arm = false;
   flight_mode_final_glide = false;
+  pev_based_advance_ready= false;
   start.Reset();
   last_hour.Reset();
 }

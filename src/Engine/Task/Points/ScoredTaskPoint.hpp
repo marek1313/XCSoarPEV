@@ -38,7 +38,12 @@
 class ScoredTaskPoint : public SampledTaskPoint
 {
   AircraftState state_entered;
+
+
+
   bool has_exited;
+
+
 
 public:
   /**
@@ -69,8 +74,10 @@ public:
    * @return State at entry, or null if never entered
    */
   const AircraftState &GetEnteredState() const {
-    return state_entered;
+		return state_entered;
   }
+
+
 
   virtual void Reset();
 
@@ -105,7 +112,7 @@ public:
    * @return True if observation zone is exited now
    */
   bool TransitionExit(const AircraftState &ref_now,
-                      const AircraftState &ref_last,
+                      const AircraftState &ref_last, const bool pev_advance_ready,
                       const FlatProjection &projection);
 
   /** Retrieve location to be used for the scored task. */
@@ -144,7 +151,7 @@ protected:
    */
   [[gnu::pure]]
   virtual bool CheckExitTransition(const AircraftState &ref_now,
-                                   const AircraftState &ref_last) const = 0;
+                                   const AircraftState &ref_last,const bool pev_advance_ready) const = 0;
 
 private:
   [[gnu::pure]]

@@ -46,7 +46,7 @@
 #include "Task/PathSolvers/TaskDijkstraMax.hpp"
 #include "Task/ObservationZones/ObservationZoneClient.hpp"
 #include "Task/ObservationZones/CylinderZone.hpp"
-
+#include "LogFile.hpp"
 
 /**
  * According to "FAI Sporting Code / Annex A to Section 3 - Gliding",
@@ -470,20 +470,23 @@ OrderedTask::CheckTransitions(const AircraftState &state,
                                                   bb_now, bb_last,
                                                   transition_enter,
                                                   transition_exit,
+                                                  stats.pev_based_advance_ready,
                                                   last_started);
     }
 
     full_update |= CheckTransitionPoint(*task_points[i],
                                         state, state_last, bb_now, bb_last,
                                         transition_enter, transition_exit,
-                                        last_started, i == 0);
+
+                                        last_started, stats.pev_based_advance_ready,
+                                        i == 0);
 
     if (i == (int)active_task_point) {
       const bool last_request_armed = task_advance.NeedToArm();
-
       if (task_advance.CheckReadyToAdvance(*task_points[i], state,
                                            transition_enter,
                                            transition_exit)) {
+
         task_advance.SetArmed(false);
 
         if (i + 1 < n_task) {
@@ -496,7 +499,9 @@ OrderedTask::CheckTransitions(const AircraftState &state,
 
           // on sector exit, must update samples since start sector
           // exit transition clears samples
+
           full_update = true;
+
         }
       } else if (!last_request_armed && task_advance.NeedToArm()) {
         if (task_events != nullptr)
@@ -514,11 +519,15 @@ OrderedTask::CheckTransitions(const AircraftState &state,
   stats.start.task_started = TaskStarted();
 
   if (stats.start.task_started) {
-    const AircraftState start_state = taskpoint_start->GetEnteredState();
-    stats.start.SetStarted(start_state);
+	const AircraftState start_state = taskpoint_start->GetEnteredState();
 
-    if (taskpoint_finish != nullptr)
-      taskpoint_finish->SetFaiFinishHeight(start_state.altitude - 1000);
+    stats.start.SetStarted(start_state);
+    stats.pev_based_advance_ready=false;
+    if (taskpoint_finish != nullptr){
+      // Calculation based on FAI finish or max_height_loss
+    	  taskpoint_finish->SetFaiFinishHeight(taskpoint_finish->CalculateFinishHeightFromStart(stats.start.altitude));
+    }
+
   }
 
   if (task_events != nullptr) {
@@ -539,7 +548,9 @@ OrderedTask::CheckTransitionOptionalStart(const AircraftState &state,
                                           const FlatBoundingBox& bb_last,
                                           bool &transition_enter,
                                           bool &transition_exit,
-                                          bool &last_started)
+
+                                          bool &last_started,
+                                          bool pev_based_advance_ready)
 {
   bool full_update = false;
 
@@ -548,7 +559,7 @@ OrderedTask::CheckTransitionOptionalStart(const AircraftState &state,
     full_update |= CheckTransitionPoint(**i,
                                         state, state_last, bb_now, bb_last,
                                         transition_enter, transition_exit,
-                                        last_started, true);
+                                        last_started, pev_based_advance_ready, true);
 
     if (transition_enter || transition_exit) {
       // we have entered or exited this optional start point, so select it.
@@ -572,10 +583,12 @@ OrderedTask::CheckTransitionPoint(OrderedTaskPoint &point,
                                   bool &transition_enter,
                                   bool &transition_exit,
                                   bool &last_started,
+                                  const bool pev_ready_to_advance,
                                   const bool is_start)
 {
   const bool nearby = point.BoundingBoxOverlaps(bb_now) ||
     point.BoundingBoxOverlaps(bb_last);
+
 
   if (nearby && point.TransitionEnter(state, state_last)) {
     transition_enter = true;
@@ -584,15 +597,19 @@ OrderedTask::CheckTransitionPoint(OrderedTaskPoint &point,
       task_events->EnterTransition(point);
   }
 
-  if (nearby && point.TransitionExit(state, state_last, task_projection)) {
+  if (nearby && point.TransitionExit(state, state_last, pev_ready_to_advance, task_projection)) {
     transition_exit = true;
 
     if (task_events != nullptr)
       task_events->ExitTransition(point);
 
     // detect restart
+    // we are not restarting if task is started on PEV
+    // additionally - if pev windowing is active there should be no restarting
     if (is_start && last_started)
-      last_started = false;
+
+      if (!ordered_settings.start_constraints.score_pev)
+         last_started = false;
   }
 
   if (is_start)
@@ -633,18 +650,41 @@ OrderedTask::UpdateIdle(const AircraftState &state,
   return retval;
 }
 
-void OrderedTask::SetPEV(BrokenTime bt){
 
-      RoughTime new_start = RoughTime(bt.hour, bt.minute);
+void OrderedTask::UpdateAfterPEV(const AircraftState &state,const BrokenTime bt) noexcept {
+
+	 pev_received=false;
+	 if (state.time.ToDuration().count()<0) {
+		 return;
+	 }
+
+      //BrokenTime bt = BrokenTime::FromSecondOfDay(state.time);
+      RoughTime new_start = RoughTime::FromSinceMidnight(state.time.ToDuration());
       RoughTime new_end = RoughTime::Invalid();
       OrderedTaskSettings &ots =
           ordered_settings;
       const StartConstraints &start = ots.start_constraints;
       if (start.score_pev){
-        if (start.closed_substart_time_span<bt){
-          ots.start_constraints.closed_substart_time_span = bt+std::chrono::seconds(RoughTimeDelta::FromDuration(start.pev_start_window).AsSeconds());
-          ots.start_constraints.pev_start_initiated=true;
-        }
+
+          // to be added confirmation dialog in case PEV events more often than configured time window
+          //ots.start_constraints.closed_substart_time_span = state.time+std::chrono::seconds(RoughTimeDelta::FromDuration(start.pev_start_window).AsSeconds());
+
+          stats.pev_based_advance_ready=true;
+
+          if (start.pev_start_wait_time.count() > 0) {
+                    auto t = std::chrono::duration_cast<std::chrono::minutes>(start.pev_start_wait_time);
+                    // Set start time to the next full minute after wait time.
+                    // This way we make sure wait time is passed before xcsoar opens the start.
+                    if (bt.second > 0)
+                      t += std::chrono::minutes{1};
+                    new_start = new_start + RoughTimeDelta::FromDuration(t);
+                  }
+          const RoughTimeSpan ts = RoughTimeSpan(new_start, new_end);
+
+          ots.start_constraints.open_time_span=ts;
+
+
+
 
       }else
       {
@@ -666,6 +706,19 @@ void OrderedTask::SetPEV(BrokenTime bt){
 
       }
 }
+
+bool OrderedTask::SetPEV(const BrokenTime bt) {
+   //Use state time instead of system time in updating information after PEV
+   if (!last_state_time.IsDefined())return false;
+ 	if (taskpoint_start){
+
+ 		  if ((taskpoint_start->GetScorePEV())&&!(ordered_settings.start_constraints.open_time_span.HasBegun(RoughTime{last_state_time})))
+ 		    /* the start gate is not yet open when we left the OZ */
+ 		    return false;
+ 	}
+ 	return AbstractTask::SetPEV(bt);
+
+ };
 
 bool
 OrderedTask::UpdateSample(const AircraftState &state,
@@ -910,7 +963,9 @@ OrderedTask::SetActiveTaskPoint(unsigned index) noexcept
     return;
 
   task_advance.SetArmed(false);
+
   active_task_point = index;
+
   force_full_update = true;
 }
 
@@ -1159,17 +1214,17 @@ OrderedTask::Reset() noexcept
 bool
 OrderedTask::TaskStarted(bool soft) const noexcept
 {
-  if (taskpoint_start) {
-    // have we really started?
-    if (taskpoint_start->HasExited())
-      return true;
+	if (taskpoint_start) {
+	    // have we really started?
+	    if (taskpoint_start->HasExited())
+	      return true;
 
-    // if soft starts allowed, consider started if we progressed to next tp
-    if (soft && (active_task_point>0))
-      return true;
-  }
+	    // if soft starts allowed, consider started if we progressed to next tp
+	    if (soft && (active_task_point>0))
+	      return true;
+	}
 
-  return false;
+	return false;
 }
 
 /**
@@ -1410,6 +1465,7 @@ OrderedTask::SetFactory(const TaskFactoryType the_factory)
   active_factory->UpdateOrderedTaskSettings(ordered_settings);
 
   PropagateOrderedTaskSettings();
+
 }
 
 void
@@ -1418,6 +1474,7 @@ OrderedTask::SetOrderedTaskSettings(const OrderedTaskSettings& ob)
   ordered_settings = ob;
 
   PropagateOrderedTaskSettings();
+
 }
 
 void
@@ -1428,6 +1485,12 @@ OrderedTask::PropagateOrderedTaskSettings()
 
   for (auto &tp : optional_start_points)
     tp->SetOrderedTaskSettings(ordered_settings);
+
+  //Update finish height in case it is based on started altitude
+  if (taskpoint_start!=nullptr && taskpoint_finish!=nullptr)
+    	  if (taskpoint_start->GetActiveState()==OrderedTaskPoint::BEFORE_ACTIVE){
+    		  taskpoint_finish->SetFaiFinishHeight(taskpoint_finish->CalculateFinishHeightFromStart(stats.start.altitude));
+  }
 }
 
 bool

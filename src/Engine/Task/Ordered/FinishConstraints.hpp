@@ -33,8 +33,9 @@ struct FinishConstraints {
   /** Reference for min finish height */
   AltitudeReference min_height_ref;
 
+  /** Maximum alt loss with reference to start altitude **/
   unsigned max_height_loss;
-  unsigned height_at_start;
+
   /**
    * Whether ordered task start and finish requires FAI height rules
    * and (no) speed rule.  The default value is
@@ -59,5 +60,5 @@ struct FinishConstraints {
   bool CheckHeight(const AircraftState &state,
                    double finish_elevation) const;
 
-  void UpdateAtTaskStart(const AircraftState &start_at_start);
+
 };
