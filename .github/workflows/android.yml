@@ -11,20 +11,81 @@ on:
       - 'python/**'
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 5f6d5ce... PEV function update
       - '.github/workflows/**'
       - 'README.md'
+<<<<<<< HEAD
     branches:
       - main
+=======
+<<<<<<< HEAD
 =======
       - '.github/workflows/build-container.yml'
       - '.github/workflows/build-unix.yml'
 =======
       - '.github/workflows/**'
+<<<<<<< HEAD
       - 'Readme.md'
 >>>>>>> Update android.yml
+=======
+      - 'README.md'
+>>>>>>> dd2c954... Update android.yml
+=======
+      - '.github/workflows/**'
+      - 'Readme.md'
+>>>>>>> 81a87eb... Update android.yml
     branches:
       - master
 >>>>>>> Create android.yml
+=======
+>>>>>>> 5f6d5ce... PEV function update
+      - '.github/workflows/build-container.yml'
+      - '.github/workflows/build-unix.yml'
+=======
+      - '.github/workflows/**'
+<<<<<<< HEAD
+      - 'Readme.md'
+<<<<<<< HEAD
+>>>>>>> Update android.yml
+=======
+      - 'README.md'
+>>>>>>> abee37c... Update android.yml
+=======
+>>>>>>> dd2c954... Update android.yml
+    branches:
+      - master
+>>>>>>> Create android.yml
+=======
+>>>>>>> 81a87eb... Update android.yml
+=======
+      - '.github/workflows/**'
+      - 'Readme.md'
+>>>>>>> 1f78c76... Update android.yml
+    branches:
+<<<<<<< HEAD
+<<<<<<< HEAD
+      - master
+>>>>>>> 8807698... Create android.yml
+=======
+      - main
+>>>>>>> d9d3bfd... Update android.yml
+>>>>>>> 5f6d5ce... PEV function update
+=======
+      - '.github/workflows/build-container.yml'
+      - '.github/workflows/build-unix.yml'
+    branches:
+      - master
+>>>>>>> 8807698... Create android.yml
+=======
+      - main
+>>>>>>> d9d3bfd... Update android.yml
 
   pull_request:
     paths-ignore:
@@ -36,6 +97,14 @@ on:
       - 'python/**'
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 5f6d5ce... PEV function update
       - '.github/workflows/**'
       - 'README.md'
     branches:
@@ -45,11 +114,65 @@ on:
       - '.github/workflows/build-unix.yml'
 =======
       - '.github/workflows/**'
+<<<<<<< HEAD
       - 'Readme.md'
 >>>>>>> Update android.yml
+<<<<<<< HEAD
+=======
+      - '.github/workflows/**'
+      - 'Readme.md'
+>>>>>>> 1f78c76... Update android.yml
     branches:
+<<<<<<< HEAD
       - master
 >>>>>>> Create android.yml
+=======
+=======
+      - '.github/workflows/**'
+<<<<<<< HEAD
+<<<<<<< HEAD
+      - 'Readme.md'
+>>>>>>> 81a87eb... Update android.yml
+=======
+      - 'README.md'
+>>>>>>> abee37c... Update android.yml
+=======
+      - '.github/workflows/**'
+      - 'Readme.md'
+>>>>>>> 81a87eb... Update android.yml
+    branches:
+<<<<<<< HEAD
+      - master
+>>>>>>> Create android.yml
+=======
+      - '.github/workflows/build-container.yml'
+      - '.github/workflows/build-unix.yml'
+=======
+      - 'README.md'
+>>>>>>> dd2c954... Update android.yml
+=======
+      - 'README.md'
+>>>>>>> dd2c954... Update android.yml
+    branches:
+<<<<<<< HEAD
+      - master
+>>>>>>> 8807698... Create android.yml
+=======
+      - main
+>>>>>>> 4703a0e... Update android.yml
+>>>>>>> 5f6d5ce... PEV function update
+=======
+      - main
+>>>>>>> e15bd95... Update android.yml
+=======
+      - '.github/workflows/build-container.yml'
+      - '.github/workflows/build-unix.yml'
+    branches:
+      - master
+>>>>>>> 8807698... Create android.yml
+=======
+      - main
+>>>>>>> 4703a0e... Update android.yml
 
 env:
   DEBUG: y
@@ -121,10 +244,37 @@ jobs:
         if: |
           github.repository == 'XCSoar/XCSoar' &&
 <<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
           github.ref == 'ref/head/main' &&
 =======
           github.ref == 'ref/head/master' &&
 >>>>>>> Create android.yml
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+          github.ref == 'ref/head/main' &&
+=======
+          github.ref == 'ref/head/master' &&
+>>>>>>> Create android.yml
+=======
+          github.ref == 'ref/head/master' &&
+>>>>>>> 8807698... Create android.yml
+=======
+          github.ref == 'ref/head/main' &&
+>>>>>>> de62913... Update android.yml
+>>>>>>> 5f6d5ce... PEV function update
+=======
+          github.ref == 'ref/head/main' &&
+>>>>>>> 85a22ed... Update android.yml
+=======
+          github.ref == 'ref/head/master' &&
+>>>>>>> 8807698... Create android.yml
+=======
+          github.ref == 'ref/head/main' &&
+>>>>>>> de62913... Update android.yml
           github.event == 'push'
         uses: easingthemes/ssh-deploy@main
         env:

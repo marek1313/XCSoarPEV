@@ -191,8 +191,25 @@ try {
   //Inform task manager about PEV
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> PEV - aligned with current version
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> PEV - aligned with current version
+=======
+>>>>>>> 2586c9f... PEV - aligned with current version
+=======
+>>>>>>> d5071b0... PEV - aligned with current version
+>>>>>>> 5f6d5ce... PEV function update
+=======
+>>>>>>> 2586c9f... PEV - aligned with current version
+=======
+>>>>>>> d5071b0... PEV - aligned with current version
   if (!protected_task_manager->SetPEV(bt)){
 	//message that no pev should be set and avoid logging into logfile
 
@@ -201,6 +218,13 @@ try {
     logger->LogPilotEvent(CommonInterface::Basic());
   }
 <<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+>>>>>>> 5f6d5ce... PEV function update
 =======
     if (!protected_task_manager->SetPEV(bt)){
     	//message that no pev should be set and avoid logging into logfile
@@ -214,6 +238,17 @@ try {
 >>>>>>> PEV mod aligned with current version
 =======
 >>>>>>> PEV - aligned with current version
+<<<<<<< HEAD
+=======
+=======
+>>>>>>> 2586c9f... PEV - aligned with current version
+=======
+>>>>>>> d5071b0... PEV - aligned with current version
+>>>>>>> 5f6d5ce... PEV function update
+=======
+>>>>>>> 2586c9f... PEV - aligned with current version
+=======
+>>>>>>> d5071b0... PEV - aligned with current version
 
   // Let devices know the pilot event was pressed
   MessageOperationEnvironment env;
@@ -514,7 +549,7 @@ InputEvents::eventNearestMapItems([[maybe_unused]] const TCHAR *misc)
   if (!location.IsValid())
     return;
 
-  CommonInterface::main_window->GetMap()->ShowMapItems(location, true, false);
+  CommonInterface::main_window->GetMap()->ShowMapItems(location);
 }
 
 // Null
