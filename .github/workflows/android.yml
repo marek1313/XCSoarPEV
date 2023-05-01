@@ -9,10 +9,17 @@ on:
       - 'ide/**'
       - 'kobo/**'
       - 'python/**'
+<<<<<<< HEAD
       - '.github/workflows/**'
       - 'README.md'
     branches:
       - main
+=======
+      - '.github/workflows/build-container.yml'
+      - '.github/workflows/build-unix.yml'
+    branches:
+      - master
+>>>>>>> Create android.yml
 
   pull_request:
     paths-ignore:
@@ -22,10 +29,17 @@ on:
       - 'ide/**'
       - 'kobo/**'
       - 'python/**'
+<<<<<<< HEAD
       - '.github/workflows/**'
       - 'README.md'
     branches:
       - main
+=======
+      - '.github/workflows/build-container.yml'
+      - '.github/workflows/build-unix.yml'
+    branches:
+      - master
+>>>>>>> Create android.yml
 
 env:
   DEBUG: y
@@ -96,7 +110,11 @@ jobs:
       - name: Deploy to Staging server
         if: |
           github.repository == 'XCSoar/XCSoar' &&
+<<<<<<< HEAD
           github.ref == 'ref/head/main' &&
+=======
+          github.ref == 'ref/head/master' &&
+>>>>>>> Create android.yml
           github.event == 'push'
         uses: easingthemes/ssh-deploy@main
         env:
