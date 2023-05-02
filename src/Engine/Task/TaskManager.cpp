@@ -81,6 +81,13 @@ TaskManager::SetMode(const TaskType _mode)
   return mode;
 }
 
+bool
+TaskManager::SetPEV(const BrokenTime bt){
+
+	return ordered_task->SetPEV(bt);
+
+}
+
 void
 TaskManager::SetActiveTaskPoint(unsigned index)
 {
