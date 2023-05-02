@@ -24,7 +24,6 @@
 
 #include "time/RoughTime.hpp"
 #include "Geo/AltitudeReference.hpp"
-#include "time/BrokenTime.hpp"
 
 struct AircraftState;
 struct TaskStartMargins;
@@ -79,7 +78,6 @@ struct StartConstraints {
   /**
    * Time in minutes start gate remains open after Pilot Event and PEV Wait
    * Time.
-   * !!!!!Logic should be changed - no following start after PEV
    */
   std::chrono::duration<unsigned> pev_start_window;
 

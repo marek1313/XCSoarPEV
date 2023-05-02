@@ -210,14 +210,10 @@ try {
 
   const BrokenTime bt = BrokenDateTime::NowUTC();
 
-
-
-  // Log pilot event
-
-
   //Inform task manager about PEV
     if (!protected_task_manager->SetPEV(bt)){
-    	//message that no pev should be set;
+    	//message that no pev should be set and avoid logging into logfile
+
     	TCHAR TempAll[120];
     	    _stprintf(TempAll, _T("Probably start window not open yet"));
     	Message::AddMessage(_("PEV Should not be used."), TempAll);

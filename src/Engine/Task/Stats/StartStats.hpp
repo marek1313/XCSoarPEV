@@ -23,7 +23,7 @@
 #pragma once
 
 #include "time/Stamp.hpp"
-#include "Navigation/Aircraft.hpp"
+
 #include <type_traits>
 
 struct AircraftState;

@@ -27,8 +27,6 @@
 #include "Unordered/GotoTask.hpp"
 #include "Unordered/AlternateTask.hpp"
 
-#include "LogFile.hpp"
-
 TaskManager::TaskManager(const TaskBehaviour &_task_behaviour,
                          const Waypoints &wps)
   :glide_polar(GlidePolar::Invalid()), safety_polar(GlidePolar::Invalid()),
@@ -100,6 +98,13 @@ TaskManager::SetMode(const TaskType _mode)
     break;
   };
   return mode;
+}
+
+bool
+TaskManager::SetPEV(const BrokenTime bt){
+
+	return ordered_task->SetPEV(bt);
+
 }
 
 void
@@ -339,13 +344,6 @@ TaskManager::GetStats() const
 
   return null_stats;
 }
-bool
-TaskManager::SetPEV(const BrokenTime bt){
-
-	return ordered_task->SetPEV(bt);
-
-}
-
 
 bool
 TaskManager::DoGoto(WaypointPtr &&wp)

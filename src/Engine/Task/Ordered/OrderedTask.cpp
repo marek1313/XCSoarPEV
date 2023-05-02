@@ -46,7 +46,6 @@
 #include "Task/PathSolvers/TaskDijkstraMax.hpp"
 #include "Task/ObservationZones/ObservationZoneClient.hpp"
 #include "Task/ObservationZones/CylinderZone.hpp"
-#include "LogFile.hpp"
 
 /**
  * According to "FAI Sporting Code / Annex A to Section 3 - Gliding",

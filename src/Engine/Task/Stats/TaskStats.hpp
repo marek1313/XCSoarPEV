@@ -25,7 +25,7 @@
 #include "ElementStat.hpp"
 #include "StartStats.hpp"
 #include "WindowStats.hpp"
-#include "Navigation/Aircraft.hpp"
+
 #include <type_traits>
 
 struct TaskBehaviour;
