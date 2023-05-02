@@ -496,7 +496,7 @@ InputEvents::eventNearestMapItems([[maybe_unused]] const TCHAR *misc)
   if (!location.IsValid())
     return;
 
-  CommonInterface::main_window->GetMap()->ShowMapItems(location, true, false);
+  CommonInterface::main_window->GetMap()->ShowMapItems(location);
 }
 
 // Null
