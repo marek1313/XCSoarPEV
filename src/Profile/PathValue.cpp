@@ -1,0 +1,117 @@
+/*
+Copyright_License {
+
+  XCSoar Glide Computer - http://www.xcsoar.org/
+  Copyright (C) 2000-2021 The XCSoar Project
+  A detailed list of copyright holders can be found in the file "AUTHORS".
+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version 2
+  of the License, or (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+}
+*/
+
+#include "Map.hpp"
+#include "LocalPath.hpp"
+#include "system/Path.hpp"
+#include "Compatibility/path.h"
+#include "util/StringAPI.hxx"
+#include "util/StringCompare.hxx"
+#include "util/StringPointer.hxx"
+#include "util/Macros.hpp"
+
+#ifdef _UNICODE
+#include "util/AllocatedString.hxx"
+#endif
+
+#include <windef.h> /* for MAX_PATH */
+
+AllocatedPath
+ProfileMap::GetPath(const char *key) const noexcept
+{
+  TCHAR buffer[MAX_PATH];
+  if (!Get(key, buffer, ARRAY_SIZE(buffer)))
+      return nullptr;
+
+  if (StringIsEmpty(buffer))
+    return nullptr;
+
+  return ExpandLocalPath(Path(buffer));
+}
+
+bool
+ProfileMap::GetPathIsEqual(const char *key, Path value) const noexcept
+{
+  const auto saved_value = GetPath(key);
+  if (saved_value == nullptr)
+    return false;
+
+  return saved_value == value;
+}
+
+[[gnu::pure]]
+static Path
+BackslashBaseName(const TCHAR *p) noexcept
+{
+  if (DIR_SEPARATOR != '\\') {
+    const auto *backslash = StringFindLast(p, _T('\\'));
+    if (backslash != NULL)
+      p = backslash + 1;
+  }
+
+  return Path(p).GetBase();
+}
+
+#ifdef _UNICODE
+
+BasicAllocatedString<TCHAR>
+ProfileMap::GetPathBase(const char *key) const noexcept
+{
+  TCHAR buffer[MAX_PATH];
+  if (!Get(key, buffer, ARRAY_SIZE(buffer)))
+      return nullptr;
+
+  const TCHAR *base = BackslashBaseName(buffer).c_str();
+  if (base == nullptr)
+    return nullptr;
+
+  return BasicAllocatedString<TCHAR>(base);
+}
+
+#else
+
+StringPointer<TCHAR>
+ProfileMap::GetPathBase(const char *key) const noexcept
+{
+  const auto *path = Get(key);
+  if (path != nullptr)
+    path = BackslashBaseName(path).c_str();
+
+  return path;
+}
+
+#endif
+
+void
+ProfileMap::SetPath(const char *key, Path value) noexcept
+{
+  if (value == nullptr || StringIsEmpty(value.c_str()))
+    Set(key, _T(""));
+  else {
+    const auto contracted = ContractLocalPath(value);
+    if (contracted != nullptr)
+      value = contracted;
+
+    Set(key, value.c_str());
+  }
+}
