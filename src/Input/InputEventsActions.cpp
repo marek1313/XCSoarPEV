@@ -219,7 +219,11 @@ try {
     if (!protected_task_manager->SetPEV(bt)){
     	//message that no pev should be set;
     	TCHAR TempAll[120];
+<<<<<<< HEAD
+    	_stprintf(TempAll, _T("Probably start window not open yet"));
+=======
     	    _stprintf(TempAll, _T("Probably start window not open yet"));
+>>>>>>> 301abd7... 7.28 with PEV development
     	Message::AddMessage(_("PEV Should not be used."), TempAll);
     }else{
     	 logger->LogPilotEvent(CommonInterface::Basic());
