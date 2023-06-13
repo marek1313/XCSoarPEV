@@ -17,3 +17,5 @@ Option "Max height loss", if greater than zero, will cause the final glide to be
 PEV start wait time changes its function and will not allow to start again for set period of time (usually 15 mins on competition in PL).
 PEV start window is not used in this start type.
 
+In situation when start was not performed correctly according using PEV, but by forcing with "Next turnpoint" option, task will not be calculated.
+
